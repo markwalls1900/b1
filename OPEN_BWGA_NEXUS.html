@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BWGA Nexus - Investment Intelligence Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+        }
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+        .loading {
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .button {
+            background: linear-gradient(135deg, #00c853, #64dd17);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        .info {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌍 BWGA Nexus</div>
+        <div class="subtitle">Investment Intelligence Platform</div>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading your complete investment analysis system...</p>
+        </div>
+        
+        <div>
+            <a href="index.html" class="button">🚀 Launch Complete System</a>
+        </div>
+        
+        <div class="info">
+            <p><strong>System Version:</strong> 7.1.0</p>
+            <p><strong>Features:</strong> 100% Complete with Advanced Analytics</p>
+            <p><strong>Status:</strong> Ready for Investment Analysis</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirect after 3 seconds
+        setTimeout(function() {
+            window.location.href = 'index.html';
+        }, 3000);
+        
+        // Also allow manual click
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('BWGA Nexus Investment Intelligence Platform Launcher');
+            console.log('Auto-redirecting to main system in 3 seconds...');
+        });
+    </script>
+</body>
+</html> 

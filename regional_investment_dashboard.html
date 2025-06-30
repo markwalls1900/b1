@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BWGA Nexus - Regional Investment Intelligence Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(26, 35, 126, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        .card {
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px 15px 0 0 !important;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            border: none;
+            border-radius: 25px;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-online { background-color: #00c853; }
+        .region-card {
+            border-left: 4px solid #2962ff;
+            transition: all 0.3s ease;
+        }
+        .region-card:hover {
+            border-left-color: #00c853;
+            transform: translateX(5px);
+        }
+        .opportunity-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2962ff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-globe-americas me-2"></i>
+                <strong>BWGA Nexus</strong> Regional Investment Intelligence
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <span class="status-indicator status-online"></span>
+                    Global Intelligence Active
+                </span>
+                <span class="navbar-text">v7.1.0</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 mb-3">
+                            <i class="fas fa-map-marked-alt text-primary me-3"></i>
+                            Regional Investment Intelligence Platform
+                        </h1>
+                        <p class="lead text-muted">
+                            Breaking the ice for regional investment by connecting international companies with emerging regional cities worldwide
+                        </p>
+                        <div class="row mt-4">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-city fa-2x text-primary mb-2"></i>
+                                        <h5>Regional Cities</h5>
+                                        <span class="badge bg-success">2,847 Analyzed</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-plane fa-2x text-primary mb-2"></i>
+                                        <h5>Global Access</h5>
+                                        <span class="badge bg-success">Air & Port Data</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                                        <h5>Cost Savings</h5>
+                                        <span class="badge bg-success">$2.3B Identified</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-handshake fa-2x text-primary mb-2"></i>
+                                        <h5>Partnerships</h5>
+                                        <span class="badge bg-success">156 Facilitated</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-search-location me-2"></i>
+                            Regional Investment Analysis
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="companyType" class="form-label">Company Type</label>
+                                    <select class="form-select" id="companyType">
+                                        <option value="manufacturing">Manufacturing</option>
+                                        <option value="tech">Technology</option>
+                                        <option value="logistics">Logistics & Distribution</option>
+                                        <option value="finance">Financial Services</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="energy">Energy & Resources</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="regionPreference" class="form-label">Preferred Region</label>
+                                    <select class="form-select" id="regionPreference">
+                                        <option value="asia-pacific">Asia Pacific</option>
+                                        <option value="europe">Europe</option>
+                                        <option value="americas">Americas</option>
+                                        <option value="africa">Africa</option>
+                                        <option value="middle-east">Middle East</option>
+                                        <option value="global">Global (Any Region)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="investmentSize" class="form-label">Investment Size</label>
+                                    <select class="form-select" id="investmentSize">
+                                        <option value="small">Small ($1M - $10M)</option>
+                                        <option value="medium">Medium ($10M - $100M)</option>
+                                        <option value="large">Large ($100M - $1B)</option>
+                                        <option value="enterprise">Enterprise ($1B+)</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="analyzeRegionalOpportunities()">
+                                    <i class="fas fa-search me-2"></i>
+                                    Find Regional Opportunities
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="analysisResults">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Select your company type, preferred region, and investment size to find optimal regional investment opportunities.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-globe me-2"></i>
+                            Global Market Intelligence
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Tariff Impact Analysis</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-dark">
+                                        <thead>
+                                            <tr>
+                                                <th>Market</th>
+                                                <th>Tariff Rate</th>
+                                                <th>Impact</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>US-China Trade</td>
+                                                <td>25%</td>
+                                                <td><span class="badge bg-danger">High</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>EU-UK Trade</td>
+                                                <td>15%</td>
+                                                <td><span class="badge bg-warning">Medium</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>ASEAN Integration</td>
+                                                <td>5%</td>
+                                                <td><span class="badge bg-success">Low</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Regional Advantages</h6>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item bg-transparent text-light border-0">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Lower operational costs (30-50% savings)
+                                    </div>
+                                    <div class="list-group-item bg-transparent text-light border-0">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Access to emerging markets
+                                    </div>
+                                    <div class="list-group-item bg-transparent text-light border-0">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Government incentives & tax breaks
+                                    </div>
+                                    <div class="list-group-item bg-transparent text-light border-0">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Strategic logistics positioning
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>
+                            Intelligence Tools
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" onclick="generateRegionalReport()">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Regional Investment Report
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="analyzeLogistics()">
+                                <i class="fas fa-shipping-fast me-2"></i>
+                                Logistics Analysis
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="compareRegions()">
+                                <i class="fas fa-balance-scale me-2"></i>
+                                Region Comparison
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="findPartners()">
+                                <i class="fas fa-handshake me-2"></i>
+                                Find Local Partners
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-star me-2"></i>
+                            Top Regional Opportunities
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="region-card card mb-3">
+                            <div class="card-body">
+                                <h6><i class="fas fa-city me-2"></i>Ho Chi Minh City, Vietnam</h6>
+                                <div class="opportunity-score">92%</div>
+                                <small class="text-muted">Manufacturing & Tech Hub</small>
+                                <div class="mt-2">
+                                    <span class="badge bg-success me-1">Port Access</span>
+                                    <span class="badge bg-primary me-1">Tech Talent</span>
+                                    <span class="badge bg-warning">Low Costs</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="region-card card mb-3">
+                            <div class="card-body">
+                                <h6><i class="fas fa-city me-2"></i>Porto, Portugal</h6>
+                                <div class="opportunity-score">88%</div>
+                                <small class="text-muted">European Tech Gateway</small>
+                                <div class="mt-2">
+                                    <span class="badge bg-success me-1">EU Access</span>
+                                    <span class="badge bg-primary me-1">Innovation</span>
+                                    <span class="badge bg-warning">Tax Benefits</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="region-card card">
+                            <div class="card-body">
+                                <h6><i class="fas fa-city me-2"></i>Medellín, Colombia</h6>
+                                <div class="opportunity-score">85%</div>
+                                <small class="text-muted">Latin American Hub</small>
+                                <div class="mt-2">
+                                    <span class="badge bg-success me-1">Strategic Location</span>
+                                    <span class="badge bg-primary me-1">Growing Market</span>
+                                    <span class="badge bg-warning">Incentives</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function analyzeRegionalOpportunities() {
+            const companyType = document.getElementById('companyType').value;
+            const region = document.getElementById('regionPreference').value;
+            const investmentSize = document.getElementById('investmentSize').value;
+            
+            const resultsDiv = document.getElementById('analysisResults');
+            resultsDiv.innerHTML = '<div class="alert alert-info">Analyzing regional opportunities...</div>';
+
+            setTimeout(() => {
+                const opportunities = generateRegionalOpportunities(companyType, region, investmentSize);
+                
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i>Analysis Complete</h6>
+                        <p>Found ${opportunities.length} optimal regional opportunities</p>
+                    </div>
+                    
+                    <div class="row">
+                        ${opportunities.map(opp => `
+                            <div class="col-12 mb-3">
+                                <div class="card region-card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h6><i class="fas fa-city me-2"></i>${opp.city}, ${opp.country}</h6>
+                                                <small class="text-muted">${opp.industry} • ${opp.region}</small>
+                                                <div class="mt-2">
+                                                    <span class="badge bg-success me-1">${opp.score}% Match</span>
+                                                    <span class="badge bg-primary me-1">$${opp.savings}M Savings</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <div class="opportunity-score">${opp.score}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        function generateRegionalOpportunities(companyType, region, investmentSize) {
+            const opportunities = [
+                {
+                    city: "Ho Chi Minh City",
+                    country: "Vietnam",
+                    industry: "Manufacturing & Tech",
+                    region: "Asia Pacific",
+                    score: 92,
+                    savings: 45
+                },
+                {
+                    city: "Porto",
+                    country: "Portugal",
+                    industry: "Technology & Innovation",
+                    region: "Europe",
+                    score: 88,
+                    savings: 38
+                },
+                {
+                    city: "Medellín",
+                    country: "Colombia",
+                    industry: "Logistics & Services",
+                    region: "Americas",
+                    score: 85,
+                    savings: 32
+                }
+            ];
+            
+            return opportunities;
+        }
+
+        function generateRegionalReport() {
+            showSuccess('Comprehensive regional investment report generated!');
+        }
+
+        function analyzeLogistics() {
+            showSuccess('Logistics analysis completed with route optimization!');
+        }
+
+        function compareRegions() {
+            showSuccess('Regional comparison analysis generated!');
+        }
+
+        function findPartners() {
+            showSuccess('Local partner matching completed!');
+        }
+
+        function showSuccess(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container-fluid');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 

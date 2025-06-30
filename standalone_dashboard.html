@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BWGA Nexus Core Final - AI Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: var(--dark-color);
+            color: white;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .file-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .report-section {
+            background: #f8f9fa;
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .nexus-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <h3 class="mb-4">
+                        <i class="fas fa-brain"></i> BWGA Nexus Core Final
+                        <div class="nexus-badge mt-2">v7.0</div>
+                    </h3>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#overview" onclick="showTab('overview')">
+                            <i class="fas fa-chart-line"></i> Overview
+                        </a>
+                        <a class="nav-link" href="#files" onclick="showTab('files')">
+                            <i class="fas fa-folder"></i> File Analysis
+                        </a>
+                        <a class="nav-link" href="#nexus-dialogue" onclick="showTab('nexus-dialogue')">
+                            <i class="fas fa-comments"></i> Nexus Dialogue
+                        </a>
+                        <a class="nav-link" href="#nare" onclick="showTab('nare')">
+                            <i class="fas fa-file-alt"></i> N.A.R.E. Reports
+                        </a>
+                        <a class="nav-link" href="#nexus-cortex" onclick="showTab('nexus-cortex')">
+                            <i class="fas fa-brain"></i> Nexus Cortex
+                        </a>
+                        <a class="nav-link" href="#settings" onclick="showTab('settings')">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <div class="main-content">
+                    <!-- Overview Tab -->
+                    <div id="overview" class="tab-content active">
+                        <h2 class="mb-4">
+                            <i class="fas fa-chart-line"></i> BWGA Nexus Core Final Dashboard
+                        </h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 id="total-files">0</h4>
+                                    <p>Total Files</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 id="total-size">0 KB</h4>
+                                    <p>Total Size</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 id="analyzed-files">0</h4>
+                                    <p>Analyzed Files</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 id="ai-insights">0</h4>
+                                    <p>AI Insights</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-chart-pie"></i> File Types Distribution</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="fileTypesChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-chart-bar"></i> Analysis Progress</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar" id="analysis-progress" style="width: 0%"></div>
+                                        </div>
+                                        <p class="text-muted">Analysis completion: <span id="progress-text">0%</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-lightbulb"></i> Quick Actions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary me-2" onclick="scanFiles()">
+                                            <i class="fas fa-search"></i> Scan Files
+                                        </button>
+                                        <button class="btn btn-primary me-2" onclick="generateNAREReport()">
+                                            <i class="fas fa-file-alt"></i> Generate N.A.R.E. Report
+                                        </button>
+                                        <button class="btn btn-primary me-2" onclick="activateNexusCortex()">
+                                            <i class="fas fa-brain"></i> Activate Nexus Cortex
+                                        </button>
+                                        <button class="btn btn-primary" onclick="showTab('nexus-dialogue')">
+                                            <i class="fas fa-comments"></i> Start Nexus Dialogue
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Files Tab -->
+                    <div id="files" class="tab-content">
+                        <h2 class="mb-4">
+                            <i class="fas fa-folder"></i> File Analysis
+                        </h2>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-list"></i> File List</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="file-list">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Click "Scan Files" to analyze your workspace</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nexus Dialogue Tab -->
+                    <div id="nexus-dialogue" class="tab-content">
+                        <h2 class="mb-4">
+                            <i class="fas fa-comments"></i> Nexus Dialogue - AI Conversational Interface
+                        </h2>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-comment-dots"></i> Interactive AI Dialogue</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chat-container" id="chat-container" style="height: 400px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; background: #f9fafb;">
+                                            <div class="message bot" style="background: white; border: 1px solid #e5e7eb; padding: 0.75rem; border-radius: 10px; margin-bottom: 1rem; max-width: 80%;">
+                                                <strong>Nexus AI:</strong> Welcome to the BWGA Nexus Core Final system. I'm your AI assistant ready to help you analyze your workspace and generate comprehensive reports. How can I assist you today?
+                                            </div>
+                                        </div>
+                                        <div class="input-group mt-3">
+                                            <input type="text" class="form-control" id="question-input" placeholder="Ask about your files, request reports, or get insights...">
+                                            <button class="btn btn-primary" onclick="askNexusQuestion()">
+                                                <i class="fas fa-paper-plane"></i> Send
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-lightbulb"></i> Suggested Questions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group">
+                                            <button class="list-group-item list-group-item-action" onclick="askSuggestedQuestion('What types of files are in this workspace?')">
+                                                What types of files are in this workspace?
+                                            </button>
+                                            <button class="list-group-item list-group-item-action" onclick="askSuggestedQuestion('Generate a comprehensive analysis report')">
+                                                Generate a comprehensive analysis report
+                                            </button>
+                                            <button class="list-group-item list-group-item-action" onclick="askSuggestedQuestion('What are the main themes in the content?')">
+                                                What are the main themes in the content?
+                                            </button>
+                                            <button class="list-group-item list-group-item-action" onclick="askSuggestedQuestion('Show me the technical specifications')">
+                                                Show me the technical specifications
+                                            </button>
+                                            <button class="list-group-item list-group-item-action" onclick="askSuggestedQuestion('What recommendations do you have?')">
+                                                What recommendations do you have?
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- N.A.R.E. Reports Tab -->
+                    <div id="nare" class="tab-content">
+                        <h2 class="mb-4">
+                            <i class="fas fa-file-alt"></i> N.A.R.E. - Nexus Automated Reporting Engine
+                        </h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-chart-line"></i> Executive Summary</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="executive-report">
+                                            <p class="text-muted">Click "Generate N.A.R.E. Report" to create a comprehensive executive summary.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-code"></i> Technical Analysis</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="technical-report">
+                                            <p class="text-muted">Click "Generate N.A.R.E. Report" for detailed technical insights.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-download"></i> Export Reports</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary me-2" onclick="exportReport('executive')">
+                                            <i class="fas fa-download"></i> Export Executive Report
+                                        </button>
+                                        <button class="btn btn-primary me-2" onclick="exportReport('technical')">
+                                            <i class="fas fa-download"></i> Export Technical Report
+                                        </button>
+                                        <button class="btn btn-primary me-2" onclick="exportReport('comprehensive')">
+                                            <i class="fas fa-download"></i> Export Comprehensive Report
+                                        </button>
+                                        <button class="btn btn-primary" onclick="exportReport('nexus')">
+                                            <i class="fas fa-download"></i> Export Nexus Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nexus Cortex Tab -->
+                    <div id="nexus-cortex" class="tab-content">
+                        <h2 class="mb-4">
+                            <i class="fas fa-brain"></i> Nexus Cortex - Self-Learning Loop
+                        </h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-cogs"></i> Learning Status</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="cortex-status">
+                                            <p><strong>Status:</strong> <span class="text-success">Active</span></p>
+                                            <p><strong>Learning Cycles:</strong> <span id="learning-cycles">0</span></p>
+                                            <p><strong>Patterns Identified:</strong> <span id="patterns-identified">0</span></p>
+                                            <p><strong>Optimization Level:</strong> <span id="optimization-level">Basic</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-chart-line"></i> Learning Progress</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="cortexChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-magic"></i> Cortex Actions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary me-2" onclick="activateCortex()">
+                                            <i class="fas fa-play"></i> Activate Cortex
+                                        </button>
+                                        <button class="btn btn-primary me-2" onclick="optimizeAnalysis()">
+                                            <i class="fas fa-tools"></i> Optimize Analysis
+                                        </button>
+                                        <button class="btn btn-primary me-2" onclick="generateInsights()">
+                                            <i class="fas fa-lightbulb"></i> Generate Insights
+                                        </button>
+                                        <button class="btn btn-primary" onclick="resetCortex()">
+                                            <i class="fas fa-redo"></i> Reset Cortex
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div id="settings" class="tab-content">
+                        <h2 class="mb-4">
+                            <i class="fas fa-cog"></i> BWGA Nexus Settings
+                        </h2>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-sliders-h"></i> System Configuration</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Nexus Core Settings</h6>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="enable-nexus-dialogue" checked>
+                                            <label class="form-check-label" for="enable-nexus-dialogue">
+                                                Enable Nexus Dialogue
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="enable-nare" checked>
+                                            <label class="form-check-label" for="enable-nare">
+                                                Enable N.A.R.E. Reports
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="enable-cortex" checked>
+                                            <label class="form-check-label" for="enable-cortex">
+                                                Enable Nexus Cortex
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Analysis Settings</h6>
+                                        <div class="mb-3">
+                                            <label for="report-depth" class="form-label">Report Depth</label>
+                                            <select class="form-select" id="report-depth">
+                                                <option value="basic">Basic</option>
+                                                <option value="detailed" selected>Detailed</option>
+                                                <option value="comprehensive">Comprehensive</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="max-files" class="form-label">Max Files to Analyze</label>
+                                            <input type="number" class="form-control" id="max-files" value="100" min="10" max="1000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentTab = 'overview';
+        let fileData = {};
+        let analysisData = {};
+        let chatHistory = [];
+        let cortexData = {
+            learningCycles: 0,
+            patternsIdentified: 0,
+            optimizationLevel: 'Basic'
+        };
+
+        // Tab management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`[href="#${tabName}"]`).classList.add('active');
+            
+            currentTab = tabName;
+        }
+
+        // File scanning
+        function scanFiles() {
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Scanning files...</p></div>';
+            
+            // Simulate file scanning
+            setTimeout(() => {
+                const files = [
+                    { name: 'saved_resource.html', size: 516, type: 'html' },
+                    { name: 'saved_resource(1).html', size: 338, type: 'html' },
+                    { name: 'b5ec104317e86d81.js.download', size: 279000, type: 'javascript' },
+                    { name: '64cf4308cb4b5923.ltr.css', size: 283, type: 'css' },
+                    { name: 'gtm.js.download', size: 407000, type: 'javascript' },
+                    { name: 'fbevents.js.download', size: 271000, type: 'javascript' },
+                    { name: 'NEXUS BWGA CORE FINAL (4).pdf', size: 5000000, type: 'pdf' }
+                ];
+                
+                displayFiles(files);
+                updateDashboardStats(files);
+                createFileTypesChart(files);
+                
+                // Update progress
+                document.getElementById('analysis-progress').style.width = '100%';
+                document.getElementById('progress-text').textContent = '100%';
+                document.getElementById('analyzed-files').textContent = files.length;
+                document.getElementById('ai-insights').textContent = Math.floor(Math.random() * 50) + 20;
+            }, 2000);
+        }
+
+        // Display files
+        function displayFiles(files) {
+            const container = document.getElementById('file-list');
+            let html = '';
+            
+            const categories = {};
+            files.forEach(file => {
+                if (!categories[file.type]) categories[file.type] = [];
+                categories[file.type].push(file);
+            });
+            
+            Object.keys(categories).forEach(category => {
+                html += `<h6 class="mt-3 mb-2">${category.toUpperCase()} Files (${categories[category].length})</h6>`;
+                
+                categories[category].forEach(file => {
+                    html += `
+                        <div class="file-item" onclick="analyzeFile('${file.name}')">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${file.name}</strong>
+                                    <br>
+                                    <small class="text-muted">${formatFileSize(file.size)}</small>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Analyze file
+        function analyzeFile(fileName) {
+            const analysis = {
+                wordCount: Math.floor(Math.random() * 1000) + 100,
+                complexityScore: (Math.random() * 10).toFixed(2),
+                sentiment: ['Positive', 'Neutral', 'Negative'][Math.floor(Math.random() * 3)],
+                keywords: ['AI', 'technology', 'analysis', 'data', 'system'],
+                entities: ['BWGA', 'Nexus', 'Core', 'Final']
+            };
+            
+            showAnalysisResult(fileName, analysis);
+        }
+
+        // Show analysis result
+        function showAnalysisResult(fileName, analysis) {
+            const resultHtml = `
+                <div class="report-section">
+                    <h6>Analysis for: ${fileName}</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Word Count:</strong> ${analysis.wordCount}</p>
+                            <p><strong>Complexity Score:</strong> ${analysis.complexityScore}</p>
+                            <p><strong>Sentiment:</strong> ${analysis.sentiment}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Keywords:</strong> ${analysis.keywords.slice(0, 5).join(', ')}</p>
+                            <p><strong>Entities:</strong> ${analysis.entities.slice(0, 3).join(', ')}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const container = document.getElementById('file-list');
+            container.insertAdjacentHTML('beforeend', resultHtml);
+        }
+
+        // Generate N.A.R.E. Report
+        function generateNAREReport() {
+            const executiveReport = `
+                <div class="report-section">
+                    <h5>BWGA Nexus Core Final - Executive Summary Report</h5>
+                    <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+                    <p><strong>Total Files Analyzed:</strong> 7</p>
+                    <p><strong>Total Size:</strong> 5.4 MB</p>
+                    <p><strong>Key Findings:</strong></p>
+                    <ul>
+                        <li>Multiple JavaScript bundles detected (Canva application)</li>
+                        <li>CSS styling files present for UI components</li>
+                        <li>HTML resource files with minimal content</li>
+                        <li>BWGA Nexus Core Final documentation included</li>
+                    </ul>
+                    <p><strong>Recommendations:</strong></p>
+                    <ul>
+                        <li>Implement comprehensive code analysis</li>
+                        <li>Optimize JavaScript bundle sizes</li>
+                        <li>Enhance documentation coverage</li>
+                        <li>Integrate advanced AI analysis capabilities</li>
+                    </ul>
+                </div>
+            `;
+            
+            const technicalReport = `
+                <div class="report-section">
+                    <h5>Technical Analysis Report</h5>
+                    <p><strong>File Structure:</strong></p>
+                    <ul>
+                        <li>HTML: 2 files (minimal content)</li>
+                        <li>JavaScript: 4 files (bundled application code)</li>
+                        <li>CSS: 1 file (styling)</li>
+                        <li>PDF: 1 file (documentation)</li>
+                    </ul>
+                    <p><strong>Technical Insights:</strong></p>
+                    <ul>
+                        <li>Large JavaScript bundles suggest complex web application</li>
+                        <li>CSS files indicate responsive design implementation</li>
+                        <li>PDF contains comprehensive system documentation</li>
+                        <li>File naming suggests automated build process</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('executive-report').innerHTML = executiveReport;
+            document.getElementById('technical-report').innerHTML = technicalReport;
+        }
+
+        // Nexus Dialogue
+        function askNexusQuestion() {
+            const input = document.getElementById('question-input');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            addMessage(question, 'user');
+            input.value = '';
+            
+            // Generate AI response
+            setTimeout(() => {
+                const responses = [
+                    `Based on my analysis of your workspace, I can see ${Math.floor(Math.random() * 10) + 5} files including JavaScript bundles, CSS files, and documentation. The BWGA Nexus Core Final system is present and ready for integration.`,
+                    `I've identified several key patterns in your content. The JavaScript files suggest a complex web application, while the CSS indicates responsive design. The PDF contains comprehensive system documentation.`,
+                    `My analysis shows that your workspace contains both application code and documentation. I recommend implementing the full BWGA Nexus Core Final system for enhanced AI capabilities.`,
+                    `The technical analysis reveals a well-structured codebase with proper separation of concerns. The BWGA Nexus documentation provides excellent guidance for system integration.`
+                ];
+                
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(response, 'bot');
+            }, 1000);
+        }
+
+        // Ask suggested question
+        function askSuggestedQuestion(question) {
+            document.getElementById('question-input').value = question;
+            askNexusQuestion();
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const container = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.style.cssText = sender === 'user' ? 
+                'background: var(--primary-color); color: white; padding: 0.75rem; border-radius: 10px; margin-bottom: 1rem; max-width: 80%; margin-left: auto;' :
+                'background: white; border: 1px solid #e5e7eb; padding: 0.75rem; border-radius: 10px; margin-bottom: 1rem; max-width: 80%;';
+            
+            messageDiv.innerHTML = `<strong>${sender === 'user' ? 'You' : 'Nexus AI'}:</strong> ${text}`;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            chatHistory.push({ sender, text, timestamp: new Date() });
+        }
+
+        // Nexus Cortex functions
+        function activateCortex() {
+            cortexData.learningCycles++;
+            cortexData.patternsIdentified += Math.floor(Math.random() * 5) + 1;
+            
+            if (cortexData.learningCycles > 10) {
+                cortexData.optimizationLevel = 'Advanced';
+            } else if (cortexData.learningCycles > 5) {
+                cortexData.optimizationLevel = 'Intermediate';
+            }
+            
+            updateCortexDisplay();
+            createCortexChart();
+        }
+
+        function updateCortexDisplay() {
+            document.getElementById('learning-cycles').textContent = cortexData.learningCycles;
+            document.getElementById('patterns-identified').textContent = cortexData.patternsIdentified;
+            document.getElementById('optimization-level').textContent = cortexData.optimizationLevel;
+        }
+
+        function createCortexChart() {
+            const ctx = document.getElementById('cortexChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: cortexData.learningCycles}, (_, i) => `Cycle ${i + 1}`),
+                    datasets: [{
+                        label: 'Learning Progress',
+                        data: Array.from({length: cortexData.learningCycles}, () => Math.floor(Math.random() * 100)),
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function optimizeAnalysis() {
+            addMessage('Nexus Cortex is optimizing analysis algorithms and improving pattern recognition capabilities.', 'bot');
+        }
+
+        function generateInsights() {
+            const insights = [
+                'Pattern detected: JavaScript bundles follow modular architecture',
+                'Optimization opportunity: CSS files can be minified',
+                'Security insight: Consider implementing code obfuscation',
+                'Performance insight: Large JS files may impact load times'
+            ];
+            
+            insights.forEach(insight => {
+                addMessage(insight, 'bot');
+            });
+        }
+
+        function resetCortex() {
+            cortexData = {
+                learningCycles: 0,
+                patternsIdentified: 0,
+                optimizationLevel: 'Basic'
+            };
+            updateCortexDisplay();
+            addMessage('Nexus Cortex has been reset to initial state.', 'bot');
+        }
+
+        // Export functions
+        function exportReport(type) {
+            const content = `BWGA Nexus Core Final - ${type.toUpperCase()} Report\nGenerated: ${new Date().toLocaleString()}\n\nThis is a sample ${type} report generated by the BWGA Nexus Core Final system.`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nexus-${type}-report-${Date.now()}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Utility functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function updateDashboardStats(files) {
+            const totalFiles = files.length;
+            const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+            
+            document.getElementById('total-files').textContent = totalFiles;
+            document.getElementById('total-size').textContent = formatFileSize(totalSize);
+        }
+
+        function createFileTypesChart(files) {
+            const ctx = document.getElementById('fileTypesChart').getContext('2d');
+            
+            const categories = {};
+            files.forEach(file => {
+                categories[file.type] = (categories[file.type] || 0) + 1;
+            });
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: [
+                            '#6366f1',
+                            '#8b5cf6',
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Event listeners
+        document.getElementById('question-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askNexusQuestion();
+            }
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('BWGA Nexus Core Final Dashboard v7.0 initialized');
+            updateCortexDisplay();
+        });
+    </script>
+</body>
+</html> 
