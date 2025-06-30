@@ -1,0 +1,228 @@
+"use client";
+
+import { useState } from 'react';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
+declare module 'jspdf' {
+    interface jsPDF {
+        autoTable: (options: any) => jsPDF;
+    }
+}
+
+// --- NSIL™ LANGUAGE MATRIX & ADVANCED AI SIMULATION ENGINE ---
+const NSIL_MATRIX = {
+    urp: {
+        high: "demonstrates an exceptionally high Untapped Regional Potential (URP), indicating a prime opportunity for strategic investment.",
+        strong: "shows strong Untapped Regional Potential (URP), suggesting a solid foundation for growth.",
+    },
+    risk: {
+        low: "Crucially, the region boasts a low-risk profile, suggesting a stable and predictable environment for investment.",
+        moderate: "This potential is balanced by a moderate risk profile, requiring targeted due diligence and strategic risk mitigation.",
+        high: "This is a high-risk, high-reward scenario where navigating the identified regulatory and political factors will be key to unlocking value."
+    },
+    opportunities: {
+        "Market Expansion": ["A growing middle class with increasing consumer demand.", "Under-served local markets with low competition."],
+        "Supply Chain Optimization": ["Strategic port access for reduced logistics costs.", "Government incentives for manufacturing and export."],
+        "FDI Attraction": ["A business-friendly environment with recent pro-investment policy changes.", "A large, skilled talent pool available for hire."],
+        "Regional Development": ["Significant government budget allocated for infrastructure projects.", "Special Economic Zone (SEZ) status with tax holidays."]
+    },
+    risks: {
+        "Market Expansion": ["Complex local distribution networks.", "Strong brand loyalty to existing players."],
+        "Supply Chain Optimization": ["Dependence on a singular transport corridor.", "Recent changes in labor regulations."],
+        "FDI Attraction": ["Bureaucratic hurdles in business registration.", "Competition for talent from established players."],
+        "Regional Development": ["Potential for delays in government project execution.", "Land acquisition complexities."]
+    }
+};
+
+function runNexusAiAnalysis(profile: any) {
+    const urpIndex = (Math.random() * 2.5 + 6.5).toFixed(1);
+    const riskScore = (Math.random() * 6.0 + 2.0).toFixed(1); // Wider risk range for more diverse outcomes
+    const partnerCount = Math.floor(Math.random() * 7) + 3;
+
+    let summary = `NSIL™ Analysis: For your objective of "${profile.objective}", our AI indicates the target region ${parseFloat(urpIndex) > 8.2 ? NSIL_MATRIX.urp.high : NSIL_MATRIX.urp.strong} `;
+    if (parseFloat(riskScore) < 4.0) summary += NSIL_MATRIX.risk.low;
+    else if (parseFloat(riskScore) < 6.0) summary += NSIL_MATRIX.risk.moderate;
+    else summary += NSIL_MATRIX.risk.high;
+    
+    let recommendedTier = "Tier 1 Strategic Brief";
+    let basePrice = 50000;
+    if (parseFloat(riskScore) > 4.5) { recommendedTier = "Tier 2 Partnership Facilitator"; basePrice = 150000; }
+    if (profile.userType === 'government' || parseFloat(riskScore) > 6.5) { recommendedTier = "Tier 3 Transformation Simulator"; basePrice = 400000; }
+
+    if (profile.userType === 'business') {
+        if (profile.companySize === 'enterprise') basePrice *= 1.5;
+        if (profile.companySize === 'large_corp') basePrice *= 2.0;
+    } else { basePrice *= 1.2; }
+
+    return {
+        urpIndex, riskScore, partnerCount, summary, recommendedTier, calculatedPrice: basePrice,
+        keyOpportunities: NSIL_MATRIX.opportunities[profile.objective as keyof typeof NSIL_MATRIX.opportunities],
+        keyRisks: NSIL_MATRIX.risks[profile.objective as keyof typeof NSIL_MATRIX.risks]
+    };
+}
+
+
+// --- MAIN REACT COMPONENT ---
+export default function NexusPlatform() {
+    const [step, setStep] = useState('welcome');
+    const [userProfile, setUserProfile] = useState<any>({});
+    const [reportData, setReportData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const startBuilder = (userType: 'business' | 'government') => {
+        setUserProfile({ userType });
+        setStep('form');
+    };
+
+    const handleGenerate = () => {
+        const organization = (document.getElementById('organization') as HTMLInputElement).value;
+        const objective = (document.getElementById('objective') as HTMLSelectElement).value;
+        const companySize = (document.getElementById('companySize') as HTMLSelectElement)?.value;
+        if (!organization || !objective) { alert('Please complete all fields.'); return; }
+        
+        const updatedProfile = { ...userProfile, organization, objective, companySize };
+
+        if (companySize === 'large_corp') {
+            setStep('escalation');
+            return;
+        }
+
+        setUserProfile(updatedProfile);
+        setIsLoading(true);
+        setStep('loading');
+        
+        setTimeout(() => {
+            const finalReportData = { ...runNexusAiAnalysis(updatedProfile), ...updatedProfile };
+            setReportData(finalReportData);
+            setIsLoading(false);
+            setStep('result');
+        }, 2500);
+    };
+
+    const downloadPdf = () => {
+        const doc = new jsPDF();
+        const { organization, urpIndex, riskScore, partnerCount, summary, keyOpportunities, keyRisks, recommendedTier } = reportData;
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(20);
+        doc.text("BWGA Nexus Intelligence Brief", 105, 20, { align: 'center' });
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`CONFIDENTIAL AI-GENERATED REPORT FOR: ${organization.toUpperCase()}`, 105, 28, { align: 'center' });
+        doc.line(15, 35, 195, 35);
+
+        doc.setFontSize(14); doc.setFont("helvetica", "bold");
+        doc.text("1. NSIL™ Executive Summary:", 15, 45);
+        doc.setFontSize(11); doc.setFont("helvetica", "normal");
+        doc.text(doc.splitTextToSize(summary, 180), 15, 52);
+
+        doc.setFontSize(14); doc.setFont("helvetica", "bold");
+        doc.text("2. Core AI Metrics:", 15, 90);
+        doc.autoTable({
+            startY: 95, theme: 'grid',
+            headStyles: { fillColor: [4, 120, 87] },
+            head: [['Metric', 'Score/Value', 'Description']],
+            body: [
+                ['URP Index™', urpIndex, 'Untapped Regional Potential'],
+                ['AGER-AI™ Risk Score', riskScore, 'Political & Economic Stability'],
+                ['GSM-AI™ Partner Matches', partnerCount, 'Compatible Partner Archetypes Found'],
+            ],
+        });
+
+        doc.setFontSize(14); doc.setFont("helvetica", "bold");
+        doc.text("3. Key Strategic Factors:", 15, doc.lastAutoTable.finalY + 15);
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 20,
+            head: [['Identified Opportunities (Drivers for URP Index™)', 'Identified Risks (Factors for Risk Score)']],
+            body: [[keyOpportunities.join('\n'), keyRisks.join('\n')]],
+            styles: { valign: 'top' }
+        });
+
+        doc.setFontSize(14); doc.setFont("helvetica", "bold");
+        doc.text("4. AI-Powered Recommendation:", 15, doc.lastAutoTable.finalY + 15);
+        doc.setFontSize(11); doc.setFont("helvetica", "normal");
+        const recommendationBody = `Based on this comprehensive data analysis, our system recommends a ${recommendedTier} as the most effective next step to pursue this opportunity. This report will provide the necessary human-led validation and strategic depth required for a successful engagement.`;
+        doc.text(doc.splitTextToSize(recommendationBody, 180), 15, doc.lastAutoTable.finalY + 22);
+
+        doc.save(`BWGA_Report_${organization.replace(/\s+/g, '_')}.pdf`);
+    };
+
+    const sendEnquiryEmail = () => {
+        const { organization, objective, userType, recommendedTier, calculatedPrice } = generatedReport;
+        const subject = `BWGA Nexus Enquiry: ${organization} - Recommended ${recommendedTier}`;
+        const body = `Dear Brayden Walls,\n\nOur organization, ${organization}, has generated a Nexus AI Snapshot and we would like to request a formal quote for the AI-recommended "${recommendedTier}" report.\n\nOur strategic profile for this enquiry:\n- User Type: ${userType}\n- Primary Objective: ${objective}\n- Company Size: ${userProfile.companySize || 'N/A'}\n\nWe consent to a confidential follow-up consultation to discuss our needs in more detail.\n\nRegards,`;
+        window.location.href = `mailto:brayden@bwglobaladvis.info?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    const renderContent = () => {
+        if (isLoading) return `<div class="p-12 text-center animate-pulse"><h2 class="text-xl font-semibold mt-4">AI Engine Running...</h2></div>`;
+        
+        switch (step) {
+            case 'form':
+                const isBusiness = userProfile.userType === 'business';
+                return `<div class="p-8"><h2 class="text-xl font-semibold mb-4 text-center">Nexus Dialogue: Build Your Report</h2><div class="space-y-4"><div><label>Organization</label><input type="text" id="organization" class="mt-1 w-full p-2 border rounded-md"/></div><div><label>Primary Objective</label><select id="objective" class="mt-1 w-full p-2 border rounded-md"><option value="">Select...</option>${isBusiness ? '<option value="Market Expansion">Market Expansion</option><option value="Supply Chain Optimization">Supply Chain Optimization</option>' : '<option value="FDI Attraction">FDI Attraction</option><option value="Regional Development">Regional Development</option>'}</select></div>${isBusiness ? `<div><label>Company Size</label><select id="companySize" class="mt-1 w-full p-2 border rounded-md"><option value="sme">SME (1-250)</option><option value="enterprise">Enterprise (251-5000)</option><option value="large_corp">Large Corp (5000+)</option></select></div>` : ''}</div><div class="flex justify-between mt-8"><button onclick="startBuilder(null)" class="px-6 py-2 bg-gray-200 rounded-md">Back</button><button onclick="handleGenerate()" class="px-6 py-2 bg-blue-600 text-white rounded-md">Generate Report</button></div></div>`;
+            case 'result':
+                return `<div class="p-8 text-center">
+                    <h2 class="text-2xl font-bold text-green-700">✅ Intelligence Brief Ready</h2>
+                    <div class="mt-4 p-4 bg-gray-50 border rounded-lg text-left">
+                        <p class="font-semibold">AI Summary for ${reportData.organization}:</p><p>${reportData.summary}</p>
+                    </div>
+                     <div class="mt-6 p-4 bg-blue-50 border-t-4 border-blue-500 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-900">AI Recommended Next Step: <span class="underline">${reportData.recommendedTier}</span></h3>
+                        <p class="text-sm font-semibold mt-2">Estimated Cost for Your Profile: <span class="font-bold text-lg">$${reportData.calculatedPrice.toLocaleString()} USD</span></p>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                           <button onclick="downloadPdf()" class="px-6 py-3 bg-white border border-gray-400 rounded-md font-semibold">Download Free PDF Summary</button>
+                           <button onclick="sendEnquiryEmail()" class="px-6 py-3 bg-blue-600 text-white rounded-md font-semibold">Request Quote for Full Report</button>
+                        </div>
+                    </div>
+                    <button onclick="startBuilder(userProfile.userType)" class="mt-4 text-sm text-gray-500 hover:underline">Start New Report</button>
+                </div>`;
+             case 'escalation':
+                return `<div class="p-8 text-center"><h2 class="text-2xl font-bold text-indigo-700">High-Potential Scenario Identified</h2><p class="mt-2 text-gray-600">Our AI has flagged your query as a uniquely complex opportunity. To ensure accuracy, this requires direct human strategic review.</p><div class="mt-6 p-4 bg-indigo-50 border rounded-lg"><p class="font-semibold">Our Founder, Brayden Walls, will personally contact you within 24 hours.</p></div></div>`;
+            case 'welcome':
+            default:
+                return `<div class="p-8 text-center"><h2 class="text-2xl font-bold mb-6">Begin Your Discovery</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div onclick="startBuilder('business')" class="p-8 border-2 rounded-lg hover:border-blue-500 cursor-pointer"><p class="font-semibold text-lg">Business / Investor</p></div><div onclick="startBuilder('government')" class="p-8 border-2 rounded-lg hover:border-blue-500 cursor-pointer"><p class="font-semibold text-lg">Government / Agency</p></div></div></div>`;
+        }
+    };
+
+    return (
+        <>
+            <div id="welcome-modal" className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full p-8 text-center">
+                    <h1 className="text-2xl font-bold">Platform Disclaimer & Protocol</h1>
+                    <p className="mt-4 text-gray-600">This platform generates reports for early-stage research. It is a tool to provide initial insight and is not a substitute for professional due diligence. Engagement resulting from this report is the sole responsibility of the respective parties, unless BWGA is formally contracted.</p>
+                    <button onClick={() => document.getElementById('welcome-modal')!.style.display = 'none'} className="mt-6 w-full px-6 py-3 bg-blue-600 text-white rounded-md font-semibold">I Understand and Agree</button>
+                </div>
+            </div>
+            <main className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+                <div className="w-full max-w-xl bg-white rounded-xl shadow-2xl border border-gray-200">
+                    <div className="p-6 text-center border-b"><h1 className="text-3xl font-bold tracking-tighter">BWGA Nexus 7.0</h1></div>
+                    <div id="content-area">
+                       {/* Initially empty, will be populated by JS */}
+                    </div>
+                </div>
+            </main>
+            <script>
+                // Self-executing function to avoid polluting global scope
+                (function() {
+                    document.addEventListener("DOMContentLoaded", () => {
+                        // The modal is visible by default in the HTML
+                        // The main app logic starts when the user closes the modal
+                    });
+                    
+                    const mainContent = document.getElementById('content-area');
+                    // All the functions (startBuilder, handleGenerate, downloadPdf, etc.) and templates are defined here
+                    // This is just to show the structure. The full code would be here.
+                    window.startBuilder = startBuilder;
+                    window.handleGenerate = handleGenerate;
+                    window.downloadPdf = downloadPdf;
+                    window.sendEnquiryEmail = sendEnquiryEmail;
+
+                    // Initial render call
+                    mainContent.innerHTML = templates.welcome;
+                })();
+            </script>
+        </>
+    );
+}

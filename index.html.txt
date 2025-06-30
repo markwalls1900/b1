@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BWGA Nexus 7.0 - Live Report Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div id="main-container" class="w-full max-w-2xl bg-white rounded-xl shadow-2xl border border-gray-200">
+        <!-- Content will be injected here by JavaScript -->
+    </div>
+
+<script>
+    const mainContainer = document.getElementById('main-container');
+    let userProfile = {};
+    let reportData = {};
+
+    const templates = {
+        step1: `
+            <div class="p-8 text-center">
+                <h2 class="text-2xl font-bold mb-6">Begin Discovery: Select Your Role</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div onclick="runDialogue('business')" class="p-8 border-2 rounded-lg hover:border-blue-500 hover:bg-blue-50 cursor-pointer"><p class="font-semibold text-lg">Business / Investor</p></div>
+                    <div onclick="runDialogue('government')" class="p-8 border-2 rounded-lg hover:border-blue-500 hover:bg-blue-50 cursor-pointer"><p class="font-semibold text-lg">Government / Agency</p></div>
+                </div>
+            </div>`,
+        getStep2HTML(userType) {
+            return `<div class="p-8"><h2 class="text-xl font-semibold mb-4">Build Your Strategic Profile</h2><div class="space-y-4"><div><label class="font-medium">Organization Name</label><input type="text" id="organization" class="mt-1 w-full p-2 border rounded-md"></div><div><label class="font-medium">Primary Objective</label><select id="objective" class="mt-1 w-full p-2 border rounded-md"><option value="">Select...</option>${userType === 'business' ? '<option value="Market Expansion">Market Expansion</option><option value="Supply Chain Optimization">Supply Chain Optimization</option>' : '<option value="FDI Attraction">FDI Attraction</option><option value="Regional Development">Regional Development</option>'}</select></div></div><div class="flex justify-between mt-8"><button onclick="renderContent('step1')" class="px-6 py-2 bg-gray-200 rounded-md">Back</button><button onclick="goToPayment()" class="px-6 py-2 bg-blue-600 text-white rounded-md">Proceed to Report Generation</button></div></div>`;
+        },
+        payment: `
+            <div class="p-8 text-center">
+                <h2 class="text-2xl font-bold">Simulated Secure Payment</h2>
+                <p class="text-gray-600 mt-2">To generate your AI Snapshot, please complete the simulated payment. This demonstrates the platform's commercial readiness.</p>
+                <div class="mt-6 p-6 border rounded-lg bg-gray-50">
+                    <p class="font-semibold">Report: <span class="text-blue-600">Nexus AI Snapshot™</span></p>
+                    <p class="text-4xl font-bold mt-2">$5.00 <span class="text-lg font-medium text-gray-500">USD</span></p>
+                    <div class="mt-4">
+                        <img src="https://i.imgur.com/gSj4SgG.png" alt="GCash and Credit Card Logos" class="h-8 mx-auto"/>
+                    </div>
+                </div>
+                <button onclick="generateReport()" class="mt-6 w-full px-6 py-3 bg-green-600 text-white rounded-md font-semibold text-lg hover:bg-green-700">Simulate Successful Payment</button>
+                <button onclick="renderContent('getStep2HTML', userProfile.userType)" class="mt-2 text-sm text-gray-500 hover:underline">Go Back</button>
+            </div>`,
+        loading: `<div class="p-8 text-center animate-pulse"><h2 class="text-2xl font-semibold mt-6">Nexus AI Engine Running...</h2><p class="text-gray-600 mt-2">Generating your personalized intelligence report...</p></div>`,
+        result: `
+            <div class="p-8 text-center">
+                <h2 class="text-2xl font-bold text-green-700">✅ Report Generated Successfully!</h2>
+                <div class="mt-4 p-4 bg-gray-50 border rounded-lg text-left">
+                    <p class="font-semibold">Summary for ${reportData.organization}:</p>
+                    <p>${reportData.summaryText}</p>
+                </div>
+                <button onclick="downloadPdf()" class="mt-6 w-full px-8 py-3 bg-blue-600 text-white rounded-md font-semibold text-lg hover:bg-blue-700">Download Your PDF Report</button>
+            </div>`
+    };
+    
+    function renderContent(templateName, ...args) {
+        mainContainer.innerHTML = typeof templates[templateName] === 'string' ? templates[templateName] : templates[templateName](...args);
+    }
+    
+    function runDialogue(type) {
+        userProfile.userType = type;
+        renderContent('getStep2HTML', type);
+    }
+
+    function goToPayment() {
+        const organization = document.getElementById('organization').value;
+        const objective = document.getElementById('objective').value;
+        if (!organization || !objective) { alert('Please complete all fields.'); return; }
+        userProfile.organization = organization;
+        userProfile.objective = objective;
+        renderContent('payment');
+    }
+
+    function generateReport() {
+        renderContent('loading');
+        setTimeout(() => {
+            const urpIndex = (Math.random() * 2.4 + 6.5).toFixed(1);
+            const riskScore = (Math.random() * 3.0 + 2.5).toFixed(1);
+            reportData = {
+                urpIndex, riskScore, partnerCount: Math.floor(Math.random() * 5) + 3,
+                organization: userProfile.organization,
+                objective: userProfile.objective,
+                summaryText: `AI analysis for your objective of "${userProfile.objective}" indicates a high Untapped Regional Potential Index of ${urpIndex}, balanced by a moderate risk score of ${riskScore}. Our system has identified several high-potential partner archetypes.`
+            };
+            renderContent('result');
+        }, 2000);
+    }
+    
+    function downloadPdf() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(22);
+        doc.text("BWGA Nexus AI Snapshot™", 105, 20, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text(`Confidential Report for: ${reportData.organization}`, 105, 30, { align: 'center' });
+        doc.line(15, 35, 195, 35);
+        doc.setFontSize(16);
+        doc.text("AI Analysis Summary:", 15, 45);
+        const splitSummary = doc.splitTextToSize(reportData.summaryText, 180);
+        doc.setFontSize(11);
+        doc.text(splitSummary, 15, 52);
+        doc.setFontSize(16);
+        doc.text("Key Metrics:", 15, 80);
+        doc.autoTable({
+            startY: 85,
+            head: [['Metric', 'Score', 'Description']],
+            body: [
+                ['URP Index™', reportData.urpIndex, 'Untapped Regional Potential Score'],
+                ['AGER-AI™ Risk Score', reportData.riskScore, 'Political & Economic Stability Score'],
+                ['GSM-AI™ Partner Matches', reportData.partnerCount, 'Number of Compatible Partner Archetypes'],
+            ],
+        });
+        doc.setFontSize(8);
+        doc.text("Disclaimer: This AI-generated report is for preliminary assessment only and not a substitute for professional due diligence.", 15, doc.lastAutoTable.finalY + 10);
+        doc.save(`BWGA_Nexus_Snapshot_${reportData.organization.replace(/ /g,"_")}.pdf`);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        renderContent('step1');
+    });
+
+</script>
+</body>
+</html>
